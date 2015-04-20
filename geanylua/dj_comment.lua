@@ -17,16 +17,13 @@ for line = line_start, line_end do
     open_bracket = string.find(line_string, '{#')
     close_bracket = string.find(line_string, '#}')
     p = geany.rowcol(line, 0)
-    geany.select(p, p + string.len(line_string)-1)
+    geany.select(p, p + string.len(line_string))
     if open_bracket and close_bracket then
-        line_string = string.sub(line_string, open_bracket+2, close_bracket-1)
+        line_string = line_string:gsub("{#", ''):gsub("#}", '')
     else
-        line_string = string.format('{#%s#}', string.sub(line_string, 0, string.len(line_string)-1))
+        line_string = string.format('{#%s#}\n', line_string:sub(0, line_string:len()-1))
         geany.scintilla("SCI_SETINDICATORCURRENT", 21, 0);
-        --geany.scintilla(sc.SCI_INDICSETSTYLE, 21, sc.INDIC_CONTAINER);
-        --geany.scintilla(sc.SCI_INDICSETFORE, 21, 0xFF8300);
-        --geany.scintilla(sc.SCI_INDICSETALPHA, DJANGO_TAG_INDICATOR, 100);
-        geany.scintilla("SCI_INDICATORFILLRANGE", p-1, string.len(line_string)-2);
+        geany.scintilla("SCI_INDICATORFILLRANGE", p-1, line_string:len()-2);
     end
     geany.selection(line_string)
 end
